@@ -1,4 +1,4 @@
-<% fields_for item do |f| %>
+<%= fields_for item do |f| %>
   <div id = "vm">
     <%= selectable_f f, :hypervisor_id, select_hypervisor(item),
       { :include_blank => "Bare Metal" },

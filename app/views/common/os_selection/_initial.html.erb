@@ -1,4 +1,4 @@
-<% fields_for item do |f| %>
+<%= fields_for item do |f| %>
   <%= select_f f, :architecture_id, Architecture.all, :id, :to_label, :include_blank => true %>
 
   <span id="host_os">

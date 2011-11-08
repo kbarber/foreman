@@ -1,11 +1,10 @@
-# Filters added to this controller apply to all controllers in the application.
-# Likewise, all the methods added will be available for all controllers.
+require 'foreman/controller/auto_complete_search'
 
 class ApplicationController < ActionController::Base
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
   rescue_from ScopedSearch::QueryNotSupported, :with => :invalid_search_query
-  rescue_from Exception, :with => :generic_exception
-  rescue_from ActiveRecord::RecordNotFound, :with => :not_found
+#  rescue_from Exception, :with => :generic_exception
+#  rescue_from ActiveRecord::RecordNotFound, :with => :not_found
 
   # standard layout to all controllers
   helper 'layout'
@@ -174,7 +173,7 @@ class ApplicationController < ActionController::Base
     if exception.message =~ /No route matches "\/puppet\/rdoc\/([^\/]+)\/classes\/(.+?)\.html/
       render :template => "puppetclasses/no_route", :locals => {:environment => $1, :name => $2.gsub("/","::")}, :layout => false
     else
-      local_request? ? rescue_action_locally(exception) : rescue_action_in_public(exception)
+      request.local? ? request.rescue_action_locally(exception) : rescue_action_in_public(exception)
     end
   end
 

@@ -27,26 +27,6 @@ class ActiveRecord::Base
       "#{self.class.name} Attribute Update"
     )
   end
-  class Ensure_not_used_by
-    def initialize(*attribute)
-      @klasses = attribute
-      @logger  = RAILS_DEFAULT_LOGGER
-    end
-
-    def before_destroy(record)
-      for klass in @klasses
-        for what in eval "record.#{klass.to_s}"
-          record.errors.add_to_base(record.to_label + " is used by " + what.to_s)
-        end
-      end
-      unless record.errors.empty?
-        @logger.error "You may not destroy #{record.to_label} as it is in use!"
-        false
-      else
-        true
-      end
-    end
-  end
 
   def id_and_type
     "#{id}-#{self.class.table_name.humanize}"
@@ -55,7 +35,7 @@ class ActiveRecord::Base
   alias_attribute :to_s, :to_label
 
   def self.per_page
-    Setting["entries_per_page"]
+    Setting["entries_per_page"] rescue 20
   end
 
   def self.unconfigured?
@@ -63,6 +43,30 @@ class ActiveRecord::Base
   end
 
 end
+
+# ActiveRecord Callback class
+class EnsureNotUsedBy
+  def initialize(*attribute)
+    @klasses = attribute
+    @logger  = Rails.logger
+  end
+
+  def before_destroy(record)
+    for klass in @klasses
+      for what in record.send(klass)
+        record.errors.add_to_base("#{record} is used by #{what}")
+      end
+    end
+    unless record.errors.empty?
+      @logger.error "You may not destroy #{record.to_label} as it is in use!"
+      false
+    else
+      true
+    end
+  end
+end
+
+
 
 module ExemptedFromLogging
   def process(request, *args)
@@ -85,17 +89,4 @@ class String
       raise "Unknown string: #{self.inspect}!"
     end
   end
-end
-module ActionView::Helpers::ActiveRecordHelper
-  def error_messages_for_with_customisation(*params)
-    if flash[:error_customisation]
-      if params[-1].is_a? Hash
-        params[-1].update flash[:error_customisation]
-      else
-        params << flash[:error_customisation]
-      end
-    end
-    error_messages_for_without_customisation(*params)
-  end
-  alias_method_chain :error_messages_for, :customisation
 end

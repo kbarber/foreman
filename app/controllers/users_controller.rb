@@ -1,7 +1,6 @@
 class UsersController < ApplicationController
   include Foreman::Controller::AutoCompleteSearch
 
-  filter_parameter_logging :password, :password_confirmation
   skip_before_filter :require_login, :only => [:login, :logout]
   skip_before_filter :authorize, :only => [:login, :logout]
 

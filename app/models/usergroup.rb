@@ -1,3 +1,4 @@
+require 'user'
 class Usergroup < ActiveRecord::Base
   include Authorization
   has_many_polymorphs :members, :from => [:usergroups, :users ], :as => :member,
@@ -5,7 +6,7 @@ class Usergroup < ActiveRecord::Base
 
   has_many :hosts, :as => :owner
   validates_uniqueness_of :name
-  before_destroy Ensure_not_used_by.new(:hosts, :usergroups)
+  before_destroy EnsureNotUsedBy.new(:hosts, :usergroups)
 
   # The text item to see in a select dropdown menu
   alias_attribute :select_title, :to_s
@@ -47,9 +48,7 @@ class Usergroup < ActiveRecord::Base
   end
 
   def validate
-    if User.all.map(&:login).include?(self.name)
-      errors.add :name, "is already used by a user account"
-    end
+    errors.add :name, "is already used by a user account" if User.first.where(:login => name)
   end
 
   def as_json(options={})

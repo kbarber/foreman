@@ -1,4 +1,4 @@
-<% form_for @search do |f|-%>
+<%= form_for @search do |f|-%>
   <div title="A substring match">
     <%= f.label :auditable_type_eq, "Type" %>
     <%= f.select :auditable_type, options_for_select(Audit.all(:select => "DISTINCT auditable_type").map{|a| auditable_type a}.sort), :include_blank => true %>

@@ -15,7 +15,7 @@ class Domain < ActiveRecord::Base
 
   scoped_search :on => [:name, :fullname], :complete_value => true
 
-  before_destroy Ensure_not_used_by.new(:hosts, :subnets)
+  before_destroy EnsureNotUsedBy.new(:hosts, :subnets)
   default_scope :order => 'LOWER(domains.name)'
 
   class Jail < Safemode::Jail

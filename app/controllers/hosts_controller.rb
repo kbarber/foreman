@@ -1,3 +1,5 @@
+require 'foreman/controller/host_details'
+
 class HostsController < ApplicationController
   include Foreman::Controller::HostDetails
   include Foreman::Controller::AutoCompleteSearch
@@ -18,7 +20,6 @@ class HostsController < ApplicationController
   before_filter :find_by_name, :only => %w[show edit update destroy puppetrun setBuild cancelBuild report
     reports facts storeconfig_klasses clone pxe_config toggle_manage]
 
-  filter_parameter_logging :root_pass
   helper :hosts, :reports
 
   def index (title = nil)
@@ -79,8 +80,7 @@ class HostsController < ApplicationController
     new.puppetclasses = @host.puppetclasses
     # Clone any parameters as well
     @host.host_parameters.each{|param| new.host_parameters << param.clone}
-    flash[:error_customisation] = {:header_message => nil, :class => "flash notice", :id => nil,
-      :message => "The following fields will need reviewing:" }
+    flash[:warning] = "The following fields will need reviewing"
     new.valid?
     @host = new
     render :action => :new

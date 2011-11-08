@@ -9,7 +9,7 @@ class Bookmark < ActiveRecord::Base
   default_scope :order => :name
   before_validation :set_default_user
 
-  named_scope :my_bookmarks, lambda {
+  scope :my_bookmarks, lambda {
     return {} unless SETTINGS[:login]
 
     user       = User.current

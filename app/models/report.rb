@@ -22,10 +22,10 @@ class Report < ActiveRecord::Base
   scoped_search :on => :status, :offset => METRIC.index("skipped"),         :word_size => BIT_NUM, :rename => :skipped
 
   # returns recent reports
-  named_scope :recent, lambda { |*args| {:conditions => ["reported_at > ?", (args.first || 1.day.ago)]} }
+  scope :recent, lambda { |*args| {:conditions => ["reported_at > ?", (args.first || 1.day.ago)]} }
 
   # with_changes
-  named_scope :interesting, {:conditions => "status != 0"}
+  scope :interesting, {:conditions => "status != 0"}
 
   # a method that save the report values (e.g. values from METRIC)
   # it is not supported to edit status values after it has been written once.

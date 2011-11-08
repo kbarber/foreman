@@ -14,17 +14,17 @@ class Host < Puppet::Rails::Host
   include Hostext::Search
   include HostCommon
 
-  class Jail < Safemode::Jail
+  class Jail < ::Safemode::Jail
     allow :name, :diskLayout, :puppetmaster, :operatingsystem, :os, :environment, :ptable, :hostgroup, :url_for_boot,
       :params, :hostgroup, :domain, :ip, :mac, :shortname
   end
 
   attr_reader :cached_host_params, :cached_lookup_keys_params
 
-  named_scope :recent,      lambda { |*args| {:conditions => ["last_report > ?", (args.first || (Setting[:puppet_interval] + 5).minutes.ago)]} }
-  named_scope :out_of_sync, lambda { |*args| {:conditions => ["last_report < ? and enabled != ?", (args.first || (Setting[:puppet_interval] + 5).minutes.ago), false]} }
+  scope :recent,      lambda { |*args| {:conditions => ["last_report > ?", (args.first || (Setting[:puppet_interval] + 5).minutes.ago)]} }
+  scope :out_of_sync, lambda { |*args| {:conditions => ["last_report < ? and enabled != ?", (args.first || (Setting[:puppet_interval] + 5).minutes.ago), false]} }
 
-  named_scope :with_fact, lambda { |fact,value|
+  scope :with_fact, lambda { |fact,value|
     unless fact.nil? or value.nil?
       { :joins => "INNER JOIN fact_values fv_#{fact} ON fv_#{fact}.host_id = hosts.id
                    INNER JOIN fact_names fn_#{fact}  ON fn_#{fact}.id      = fv_#{fact}.fact_name_id",
@@ -35,7 +35,7 @@ class Host < Puppet::Rails::Host
     end
   }
 
-  named_scope :with_class, lambda { |klass|
+  scope :with_class, lambda { |klass|
     unless klass.nil?
       { :joins => :puppetclasses, :select => "hosts.name", :conditions => {:puppetclasses => {:name => klass }} }
     else
@@ -43,31 +43,31 @@ class Host < Puppet::Rails::Host
     end
   }
 
-  named_scope :with_error, { :conditions => "(puppet_status > 0) and
+  scope :with_error, { :conditions => "(puppet_status > 0) and
    ( ((puppet_status >> #{BIT_NUM*METRIC.index("failed")} & #{MAX}) != 0) or
     ((puppet_status >> #{BIT_NUM*METRIC.index("failed_restarts")} & #{MAX}) != 0) )"
   }
 
-  named_scope :without_error, { :conditions =>
+  scope :without_error, { :conditions =>
     "((puppet_status >> #{BIT_NUM*METRIC.index("failed")} & #{MAX}) = 0) and
      ((puppet_status >> #{BIT_NUM*METRIC.index("failed_restarts")} & #{MAX}) = 0)"
   }
 
-  named_scope :with_changes, { :conditions => "(puppet_status > 0) and
+  scope :with_changes, { :conditions => "(puppet_status > 0) and
     ( ((puppet_status >> #{BIT_NUM*METRIC.index("applied")} & #{MAX}) != 0) or
     ((puppet_status >> #{BIT_NUM*METRIC.index("restarted")} & #{MAX}) != 0) )"
   }
 
-  named_scope :without_changes, { :conditions =>
+  scope :without_changes, { :conditions =>
     "((puppet_status >> #{BIT_NUM*METRIC.index("applied")} & #{MAX}) = 0) and
      ((puppet_status >> #{BIT_NUM*METRIC.index("restarted")} & #{MAX}) = 0)"
   }
 
-  named_scope :successful, lambda { without_changes.without_error.scope(:find)}
+  scope :successful, lambda { without_changes.without_error }
 
-  named_scope :alerts_disabled, {:conditions => ["enabled = ?", false] }
+  scope :alerts_disabled, {:conditions => ["enabled = ?", false] }
 
-  named_scope :my_hosts, lambda {
+  scope :my_hosts, lambda {
     user                 = User.current
     owner_conditions     = sanitize_sql_for_conditions(["((hosts.owner_id in (?) AND hosts.owner_type = 'Usergroup') OR (hosts.owner_id = ? AND hosts.owner_type = 'User'))", user.my_usergroups.map(&:id), user.id])
     domain_conditions    = sanitize_sql_for_conditions([" (hosts.domain_id in (?))",dms = (user.domains).map(&:id)])
@@ -95,7 +95,7 @@ class Host < Puppet::Rails::Host
     {:conditions => conditions}
   }
 
-  named_scope :completer_scope, lambda { my_hosts.scope(:find) }
+  scope :completer_scope, lambda { my_hosts }
 
   named_scope :run_distribution, lambda { |fromtime,totime|
     unless fromtime.nil? or totime.nil?

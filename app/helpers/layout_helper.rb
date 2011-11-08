@@ -5,11 +5,11 @@ module LayoutHelper
   end
 
   def title_actions *elements
-    content_for(:title_actions) { elements.join(" ") }
+    content_for(:title_actions) { elements.join(" ").html_safe }
   end
 
   def search_bar *elements
-    content_for(:search_bar) { elements.join(" ") }
+    content_for(:search_bar) { elements.join(" ").html_safe }
   end
 
   def stylesheet(*args)
@@ -30,7 +30,7 @@ module LayoutHelper
 
   def page_entries_info(collection, options = {})
     html = super(collection, options)
-    html += options[:more] if options[:more]
+    html += options[:more].html_safe if options[:more]
     content_tag(
         :div,content_tag(
             :ul, content_tag(
@@ -90,13 +90,13 @@ module LayoutHelper
           raw = ""
           raw += content_tag(:span, (error.empty? ? options[:help_inline] : error.to_a.to_sentence), :class => "help-inline")
           raw += content_tag(:span, options[:help_block], :class => "help-block")
-          yield + raw
+          yield + raw.html_safe
         end
     end
   end
 
   def submit_or_cancel f
-    "<br>" + content_tag(:p, :class => "ra") do
+    "<br>".html_safe + content_tag(:p, :class => "ra") do
       link_to("Cancel", eval("#{controller_name}_path"), :class => "btn") + " " +
       f.submit("Submit", :class => "btn primary")
     end
@@ -105,7 +105,7 @@ module LayoutHelper
   def base_errors_for obj
     if errors = obj.errors.on(:base)
       content_tag(:div, :class => "alert-message block-message error base in fade", "data-alert" => true) do
-        '<a class="close" href="#">×</a>' + "<h4>Unable to save</h4>" + errors.map {|e| "<li>#{e}</li>"}.join
+        "<a class='close' href='#'>×</a><h4>Unable to save</h4> #{errors.map {|e| '<li>#{e}</li>'}.join}".html_safe
       end
     end
   end

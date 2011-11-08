@@ -17,7 +17,7 @@ class Medium < ActiveRecord::Base
     :if => Proc.new { |m| m.respond_to? :media_path }
 
   alias_attribute :os, :operatingsystem
-  before_destroy Ensure_not_used_by.new(:hosts)
+  before_destroy EnsureNotUsedBy.new(:hosts)
   default_scope :order => 'LOWER(media.name)'
   scoped_search :on => [:name, :path], :complete_value => :true
 

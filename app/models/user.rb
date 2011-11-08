@@ -33,7 +33,7 @@ class User < ActiveRecord::Base
   validates_format_of :mail, :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :allow_nil => true
   validates_length_of :mail, :maximum => 60, :allow_nil => true
 
-  before_destroy Ensure_not_used_by.new(:hosts), :ensure_admin_is_not_deleted
+  before_destroy EnsureNotUsedBy.new(:hosts), :ensure_admin_is_not_deleted
   validate :name_used_in_a_usergroup
   before_validation :prepare_password
   after_destroy Proc.new {|user| user.domains.clear; user.hostgroups.clear}

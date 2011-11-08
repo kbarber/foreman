@@ -6,7 +6,7 @@ class Ptable < ActiveRecord::Base
   include Authorization
   has_many :hosts
   has_and_belongs_to_many :operatingsystems
-  before_destroy Ensure_not_used_by.new(:hosts)
+  before_destroy EnsureNotUsedBy.new(:hosts)
   validates_uniqueness_of :name
   validates_uniqueness_of :layout
   validates_presence_of :layout

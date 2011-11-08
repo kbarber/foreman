@@ -1,4 +1,4 @@
-<% fields_for item do |f| %>
+<%= fields_for item do |f| %>
   <%= select_f f, :domain_id, accessible_domains, :id, :to_label, :include_blank => true %>
 
   <span id="<%= type %>_subnet">

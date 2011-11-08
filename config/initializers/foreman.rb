@@ -2,9 +2,10 @@ require 'core_extensions'
 require 'access_permissions'
 require 'puppet'
 require 'puppet/rails'
+require 'foreman'
 
 # import settings file
-SETTINGS= YAML.load_file("#{RAILS_ROOT}/config/settings.yaml")
+SETTINGS= YAML.load_file("#{Rails.root}/config/settings.yaml")
 
 SETTINGS[:version] = "0.4"
 
@@ -22,7 +23,7 @@ begin
     SETTINGS[:libvirt] = false
   end
 rescue LoadError
-  RAILS_DEFAULT_LOGGER.debug "Libvirt binding are missing - hypervisor management is disabled"
+  Rails.logger.debug "Libvirt binding are missing - hypervisor management is disabled"
   SETTINGS[:libvirt] = false
 end
 

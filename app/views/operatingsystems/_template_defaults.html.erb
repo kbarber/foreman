@@ -12,7 +12,7 @@
       </div>
     <% end -%>
 
-    <% f.fields_for :os_default_templates do |builder| -%>
+    <%= f.fields_for :os_default_templates do |builder| -%>
       <%= render 'templates', :f => builder %>
     <% end -%>
   <% end -%>
