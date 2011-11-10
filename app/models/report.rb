@@ -294,7 +294,7 @@ class Report < ActiveRecord::Base
     return true if operation == "create"
     return true if operation == "destroy" and User.current.allowed_to?(:destroy_reports)
 
-    errors.add_to_base "You do not have permission to #{operation} this report"
+    errors.add :base, "You do not have permission to #{operation} this report"
     false
   end
 

@@ -61,8 +61,8 @@ class SmartProxy < ActiveRecord::Base
       reason = e.message
     end
     unless reply
-      errors.add_to_base "Unable to communicate with the proxy: #{reason}"
-      errors.add_to_base "Please check the proxy is configured and running on the host before saving."
+      errors.add :base, "Unable to communicate with the proxy: #{reason}"
+      errors.add :base, "Please check the proxy is configured and running on the host before saving."
     end
     !reply.empty?
   end

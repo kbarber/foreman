@@ -42,7 +42,7 @@ module Orchestration
     # log and add to errors
     def failure msg, backtrace=nil
       logger.warn(backtrace ? msg + backtrace.join("\n") : msg)
-      errors.add_to_base msg
+      errors.add :base, msg
       false
     end
 

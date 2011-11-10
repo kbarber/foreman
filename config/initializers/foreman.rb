@@ -1,9 +1,7 @@
-require 'core_extensions'
+require 'foreman'
 require 'access_permissions'
 require 'puppet'
 require 'puppet/rails'
-require 'foreman'
-
 # import settings file
 SETTINGS= YAML.load_file("#{Rails.root}/config/settings.yaml")
 

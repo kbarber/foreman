@@ -262,7 +262,7 @@ class HostsController < ApplicationController
     #update the hosts
     @hosts.each do |host|
       host.hostgroup=hg
-      host.save(false)
+      host.save(:validate => false)
     end
 
     notice 'Updated hosts: Changed Hostgroup'
@@ -284,7 +284,7 @@ class HostsController < ApplicationController
     #update the hosts
     @hosts.each do |host|
       host.environment=ev
-      host.save(false)
+      host.save(:validate => false)
     end
 
     notice 'Updated hosts: Changed Environment'

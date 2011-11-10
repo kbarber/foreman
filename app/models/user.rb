@@ -195,7 +195,7 @@ class User < ActiveRecord::Base
 
   def name_used_in_a_usergroup
     if Usergroup.all.map(&:name).include?(self.login)
-      errors.add_to_base "A usergroup already exists with this name"
+      errors.add :base, "A usergroup already exists with this name"
     end
   end
 
@@ -204,7 +204,7 @@ class User < ActiveRecord::Base
   # admin account automatically
   def ensure_admin_is_not_deleted
     if login == "admin"
-      errors.add_to_base "Can't delete internal admin account"
+      errors.add :base, "Can't delete internal admin account"
       logger.warn "Unable to delete internal admin account"
       return false
     end

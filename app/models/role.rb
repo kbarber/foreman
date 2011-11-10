@@ -149,8 +149,8 @@ private
   end
 
   def check_deletable
-    errors.add_to_base "Role is in use" if users.any?
-    errors.add_to_base "Can't delete builtin role" if builtin?
+    errors.add :base, "Role is in use" if users.any?
+    errors.add :base, "Can't delete builtin role" if builtin?
     errors.empty?
   end
 end

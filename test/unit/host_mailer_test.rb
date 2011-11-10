@@ -6,7 +6,7 @@ class HostMailerTest < ActionMailer::TestCase
     @env = environments(:production)
     as_admin do
       @host.last_report = Time.at(0)
-      @host.save(false)
+      @host.save(:validate => false)
       @env.hosts << @host
       @env.save
     end

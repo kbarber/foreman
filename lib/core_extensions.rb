@@ -28,6 +28,28 @@ class ActiveRecord::Base
     )
   end
 
+  # ActiveRecord Callback class
+  class EnsureNotUsedBy
+    def initialize *attribute
+      @klasses = attribute
+      @logger  = Rails.logger
+    end
+
+    def before_destroy(record)
+      for klass in @klasses
+        for what in record.send(klass.to_sym)
+          record.errors.add :base, "#{record} is used by #{what}"
+        end
+      end
+      unless record.errors.empty?
+        @logger.error "You may not destroy #{record.to_label} as it is in use!"
+        false
+      else
+        true
+      end
+    end
+  end
+
   def id_and_type
     "#{id}-#{self.class.table_name.humanize}"
   end
@@ -42,28 +64,6 @@ class ActiveRecord::Base
     first.nil?
   end
 
-end
-
-# ActiveRecord Callback class
-class EnsureNotUsedBy
-  def initialize(*attribute)
-    @klasses = attribute
-    @logger  = Rails.logger
-  end
-
-  def before_destroy(record)
-    for klass in @klasses
-      for what in record.send(klass)
-        record.errors.add_to_base("#{record} is used by #{what}")
-      end
-    end
-    unless record.errors.empty?
-      @logger.error "You may not destroy #{record.to_label} as it is in use!"
-      false
-    else
-      true
-    end
-  end
 end
 
 

@@ -66,7 +66,7 @@ class ConfigTemplate < ActiveRecord::Base
 
     return true if User.current and User.current.allowed_to?("#{operation}_templates".to_sym)
 
-    errors.add_to_base "You do not have permission to #{operation} this template"
+    errors.add :base, "You do not have permission to #{operation} this template"
     false
   end
 

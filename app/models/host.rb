@@ -331,7 +331,7 @@ class Host < Puppet::Rails::Host
     return false unless facts.is_a?(Puppet::Node::Facts)
 
     h=find_or_create_by_name(facts.name)
-    h.save(false) if h.new_record?
+    h.save(:validate => false) if h.new_record?
     h.importFacts(facts)
   end
 
@@ -351,7 +351,7 @@ class Host < Puppet::Rails::Host
     self.last_compile = time
     # save all other facts - pre 0.25 it was called setfacts
     respond_to?("merge_facts") ? self.merge_facts(facts.values) : self.setfacts(facts.values)
-    save(false)
+    save(:validate => false)
 
     # we want to import other information only if this host was never installed via Foreman
     populateFieldsFromFacts if installed_at.nil?
@@ -361,7 +361,7 @@ class Host < Puppet::Rails::Host
     # If we don't (e.g. we never install the server via Foreman, we populate the fields from facts
     # TODO: if it was installed by Foreman and there is a mismatch,
     # we should probably send out an alert.
-    return self.save(false)
+    return self.save(:validate => false)
 
   rescue Exception => e
     logger.warn "Failed to save #{facts.name}: #{e}"
@@ -405,7 +405,7 @@ class Host < Puppet::Rails::Host
     end
 
     # again we are saving without validations as input is required (e.g. partition tables)
-    self.save(false)
+    self.save(:validate => false)
   end
 
   # Called by build link in the list
@@ -555,7 +555,7 @@ class Host < Puppet::Rails::Host
         (!current.hostgroups.empty? and current.hostgroups.include?(hostgroup))
       end
     end
-    errors.add_to_base "You do not have permission to #{operation} this host"
+    errors.add :base, "You do not have permission to #{operation} this host"
     false
   end
 

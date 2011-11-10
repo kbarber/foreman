@@ -7,6 +7,7 @@ require 'rails/all'
 Bundler.require(:default, Rails.env) if defined?(Bundler)
 
 require File.expand_path('../../lib/timed_cached_store.rb', __FILE__)
+require File.expand_path('../../lib/core_extensions', __FILE__)
 
 module Foreman
   class Application < Rails::Application
@@ -16,6 +17,7 @@ module Foreman
 
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
+    config.autoload_paths += %W(#{config.root}/lib)
 
     # Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.

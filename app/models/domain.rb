@@ -45,7 +45,7 @@ class Domain < ActiveRecord::Base
       end
     end
 
-    errors.add_to_base "You do not have permission to #{operation} this domain"
+    errors.add :base, "You do not have permission to #{operation} this domain"
     false
   end
 
